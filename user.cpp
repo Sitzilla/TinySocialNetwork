@@ -44,10 +44,15 @@ string User::getFriendsName(int i) {
 
 void User::printFriends() {
     cout << "Friends for: " << name << endl;
-
+    cout << "HERE" << endl;
+    exit(0);
     for (int i = 0; i < friendList.size(); i++) {
-        cout << friendList[i]->getName() << endl;
+        if (friendList[i] != NULL) {
+            cout << friendList[i]->getName() << endl;
+        }
     }
+    // cout << "HERE" << endl;
+    // exit(0);
 }
 
 void User::clearFriendlist() {

@@ -2,121 +2,212 @@
 #include "basic.h"
 #include "user.h"
 #include "friendhash.h"
+#include "tokenizer.h"
 
 using namespace std;
+void makeFriends(BasicHT &userHashtable, FriendHash &friendshipHashtable, string userName1, string userName2);
+bool checkTwoUsersExist(BasicHT &userHashtable, string userName1, string userName2);
+void registerUser(BasicHT &userHashtable, string name);
+void unfriendUsers(BasicHT &userHashtable, FriendHash &friendshipHashtable, string userName1, string userName2);
+bool checkFriends(BasicHT &userHashtable, FriendHash &friendshipHashtable, string userName1, string userName2);
+void unregisterUser(BasicHT &userHashtable, FriendHash &friendshipHashtable, string userName);
+void list(BasicHT &userHashtable, string name);
+void printInstructions();
 
+
+void startGameLoop(BasicHT &userHashtable, FriendHash &friendshipHashtable) {
+
+    // REORDER EVERYTHING TO BE LOGICAL
+    string quitCommand = "quit";
+    string listUsersCommand = "listusers";
+    string listCommand = "list";
+    string registerCommand = "register";
+    string friendCommand = "friend";
+    string unfriendCommand = "unfriend";
+    string unregisterCommand = "unregister";
+    string checkfriendsCommand = "checkfriends";
+
+    cout << "Welcome to the Sitzes Social System!" << endl;
+    printInstructions();
+
+    while (true) {
+        while (true) {
+
+            string input;
+            Tokenizer tokenizer;
+            string token;
+
+            cout << "Enter in a command..." << endl;
+            getline(cin, input);
+
+            tokenizer.tokenize(input);
+            tokenizer.nextToken(token);
+
+            string command = token;
+
+
+            // Exit the program
+            if(command == quitCommand) {
+                cout << "Exiting Sitzes Social System" << endl;
+                exit(0);          
+            }
+            // Print out all friends for a User
+            else if(command == listCommand) {
+                tokenizer.nextToken(token);
+                list(userHashtable, token);                  
+            }
+            // Registers a User in the system
+            else if(command == registerCommand) {
+                
+                tokenizer.nextToken(token);
+                registerUser(userHashtable, token);    
+            }
+            // Friends two users
+            else if(command == friendCommand) {
+                tokenizer.nextToken(token);
+                string userName1 = token;
+                tokenizer.nextToken(token);
+                string userName2 = token;
+
+                makeFriends(userHashtable, friendshipHashtable, userName1, userName2);
+            }        
+            // Unfriends two users
+            else if(command == unfriendCommand) {
+                tokenizer.nextToken(token);
+                string userName1 = token;
+                tokenizer.nextToken(token);
+                string userName2 = token;
+
+                unfriendUsers(userHashtable, friendshipHashtable, userName1, userName2);
+            }
+            // Unregisters a user
+            else if(command == unregisterCommand) {
+                tokenizer.nextToken(token);
+                unregisterUser(userHashtable, friendshipHashtable, token);
+            }
+            // List all registered users
+            else if(command == listUsersCommand) {
+                list(userHashtable, token);
+            } else {
+                cout << "Error... unrecognizable command" << endl;
+                printInstructions();
+            }
+        }
+    }
+}
+
+void printInstructions() {
+    cout << "Legal commands: " << endl
+    << "Register a user: register <name>" << endl
+    << "Unregister a user: unregister <name>" << endl
+    << "Friend two users: friend <name1> <name2>" << endl
+    << "Unfriend two users: unfriend <name1> <name2>" << endl
+    << "List all registered users: listusers" << endl
+    << "List all friends for a user: list <name>" << endl
+    << "Check if two users are friends: checkfriend <name1> <name2>" << endl
+    << "Exit the program: quit" << endl;
+}
 
 // 'Make Friends' method.  Can possibly be refactored
-void makeFriends(FriendHash &friendshipHashmap, User &user1, User &user2) {
-    string name1 = user1.getName() + user2.getName();
-    string name2 = user2.getName() + user1.getName();
+void makeFriends(BasicHT &userHashtable, FriendHash &friendshipHashtable, string userName1, string userName2) {
+    if (!checkFriends(userHashtable, friendshipHashtable, userName1, userName2)) {
+        string name1 = userName1 + userName2;
+        string name2 = userName2 + userName1;
 
-    user1.setFriend(&user2);
-    user2.setFriend(&user1);
+        User *user1 = userHashtable.get(userName1);
+        User *user2 = userHashtable.get(userName2);
 
-    // Sets the friends in the friendship hashmap
-    friendshipHashmap.set(name1, true);
-    friendshipHashmap.set(name2, true);
+        user1->setFriend(*&user1);
+        user2->setFriend(*&user1);
 
-    cout << user1.getName() << " and " << user2.getName() << " are now friends!" << endl;
+        friendshipHashtable.set(name1, true);
+        friendshipHashtable.set(name2, true);
 
+        cout << userName1 << " and " << userName2 << " are now friends!" << endl;
+    } else {
+        cout << userName1 << " and " << userName2 << " are already friends... cannot 'double' friend.";
+    }
 }
 
-User registerUser(BasicHT &userHashmap, string name) {
-    User user(name);
-    userHashmap.set(user.getName(), &user);
-    return user;
-}
+bool checkFriends(BasicHT &userHashtable, FriendHash &friendshipHashtable, string userName1, string userName2) {
 
-void unfriendUsers(FriendHash &friendshipHashmap, User &user1, User &user2) {
-    // CHECK IF ALREADY FRIENDS
-    string nameUser1 = user1.getName();
-    string nameUser2 = user2.getName();
+    if (!checkTwoUsersExist(userHashtable, userName1, userName2)) {
+        cout << userName1 << " and " << userName2 << " are not both registered users... cannot perform operation.";
+        return false;
+    }
+    string name1 = userName1 + userName2;
+    string name2 = userName2 + userName1;
 
-    cout <<  "Unfriending " << nameUser1 << " and " << nameUser2 << endl;
-
-    // CAN PROBABLY MODULARIZE THIS
-    string name1 = nameUser1 + nameUser2;
-    string name2 = nameUser2 + nameUser1;
-
-    friendshipHashmap.remove(name1);
-    friendshipHashmap.remove(name2);
-
-    user1.removeFromFriendsList(nameUser2);
-    user2.removeFromFriendsList(nameUser1);
-}
-
-bool checkFriends(FriendHash &friendshipHashmap, string nameUser1, string nameUser2) {
-    // CAN PROBABLY MODULARIZE THIS
-    string name1 = nameUser1 + nameUser2;
-    string name2 = nameUser2 + nameUser1;
-
-    if (friendshipHashmap.has(name1) && friendshipHashmap.has(name2)) {
-        cout << nameUser1 << " and " << nameUser2 << " are friends." << endl;
+    if (friendshipHashtable.has(name1) && friendshipHashtable.has(name2)) {
         return true;
     }
-    cout << nameUser1 << " and " << nameUser2 << " are not friends." << endl;
+    // cout << userName1 << " and " << userName2 << " are not friends." << endl;
     return false;
 }
 
 
-void unregisterUser(BasicHT &userHashmap, FriendHash &friendshipHashmap, User &user) {
-    string nameUser = user.getName();
-
-    // For each friend that a user has, remove them from the friendHashmap
-    for (int i = 0; i < user.getSize(); i++) {
-        User *usersFriend = userHashmap.get(user.getFriendsName(i));
-        unfriendUsers(friendshipHashmap, user, *usersFriend);
+bool checkTwoUsersExist(BasicHT &userHashtable, string userName1, string userName2) {
+    if (userHashtable.has(userName1) && userHashtable.has(userName2)) {
+        return true;
     }
-    
-    // Remove user from UserHashmap
-    userHashmap.remove(nameUser);
-
-    // Clear users friendlist
-    user.clearFriendlist();
+    return false;
 }
 
-void list(BasicHT &userHashmap, User &user) {
-    userHashmap.list(user.getName());
+void registerUser(BasicHT &userHashtable, string name) {
+    User user(name);
+    userHashtable.set(user.getName(), &user);
+}
+
+void unfriendUsers(BasicHT &userHashtable, FriendHash &friendshipHashtable, string userName1, string userName2) {
+    if (checkFriends(userHashtable, friendshipHashtable, userName1, userName2)) {
+        cout <<  "Unfriending " << userName1 << " and " << userName2 << endl;
+
+        User *user1 = userHashtable.get(userName1);
+        User *user2 = userHashtable.get(userName2);
+        // CAN PROBABLY MODULARIZE THIS
+        string name1 = userName1 + userName2;
+        string name2 = userName2 + userName1;
+
+        friendshipHashtable.remove(name1);
+        friendshipHashtable.remove(name2);
+
+        user1->removeFromFriendsList(userName2);
+        user2->removeFromFriendsList(userName1);
+    } else {
+        cout << userName1 << " and " << userName2 << " are not both registered users... cannot unfriend.";
+    }
+}
+
+void unregisterUser(BasicHT &userHashtable, FriendHash &friendshipHashtable, string userName) {
+    User *user = userHashtable.get(userName);
+
+    // For each friend that a user has, remove them from the friendHashmap
+    for (int i = 0; i < user->getSize(); i++) {
+        string usersFriendsName = user->getFriendsName(i);
+        unfriendUsers(userHashtable, friendshipHashtable, userName, usersFriendsName);
+    }
+    
+    // Remove user from userHashtable
+    userHashtable.remove(userName);
+
+    // Clear users friendlist
+    user->clearFriendlist();
+}
+
+void listUsers(BasicHT &userHashtable) {
+    cout << "Listing all registered users: " << endl;
+    userHashtable.printUsers();
+}
+
+void list(BasicHT &userHashtable, string name) {
+    userHashtable.list(name);
 }
 
 int main() {
-    BasicHT userHashmap(1);
-    FriendHash friendshipHashmap(1);
+    BasicHT userHashtable(5);
+    FriendHash friendshipHashtable(5);
 
-    User user1 = registerUser(userHashmap, "Evan");
-    User user2 = registerUser(userHashmap, "Scott");
-    User user3 = registerUser(userHashmap, "Dempe");
-    User user4 = registerUser(userHashmap, "Kenny");
- 
-    // userHashmap.set(user1.getName(), &user1);
-    // userHashmap.set(user2.getName(), &user2); 
-    // userHashmap.set(user3.getName(), &user3);  
-
-    // bool areFriends;
-    makeFriends(friendshipHashmap, user1, user2);
-    makeFriends(friendshipHashmap, user1, user3);
-    makeFriends(friendshipHashmap, user1, user4);
-    makeFriends(friendshipHashmap, user3, user4);
-
-
-    // cout << "Friend list: " << endl;
-    // user1.printFriends();
-        
-    // list(userHashmap, user1);
-
-    // unregisterUser(userHashmap, friendshipHashmap, user3);
-
-
-    checkFriends(friendshipHashmap, "Evan", "Kenny");
-    checkFriends(friendshipHashmap, "Scott", "Kenny");
-
-    // list(userHashmap, user1);
-
-    // cout << "Friend list now: " << endl;
-    // user1.printFriends();
-
-    // cout << userHashmap.get(user1.getName());
+    startGameLoop(userHashtable, friendshipHashtable);
 
     return 0;
 }

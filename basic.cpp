@@ -5,7 +5,9 @@
 using namespace std;
 
 BasicHT::BasicHT(int capacity)
-: vals(capacity), keys(capacity) {}
+: vals(capacity), keys(capacity) {
+    n = 0;
+}
 
 BasicHT::BasicHT(const BasicHT &other)
 : vals(other.vals.size()), keys(other.keys.size())
@@ -71,9 +73,7 @@ void BasicHT::remove(string key)
 
 void BasicHT::list(string key) {
     int i = hash(key);
-
     vals[i]->printFriends();
-
 }
 
 
@@ -118,7 +118,7 @@ void BasicHT::set(string key, User *val)
 
     keys[i] = new string(key);
     vals[i] = val;
-    
+
     if(n / (double) keys.size() > 0.6)
 	{
 	    resize();
@@ -144,6 +144,16 @@ int BasicHT::hash(string key) const
 		x = x * 31 + key[i];
 	}
 	return x % vals.size();
+}
+
+void BasicHT::printUsers() {
+
+    for(int i = 0; i < vals.size(); i++) {
+        if(vals[i] != NULL) {
+            cout << vals[i]->getName() << endl;
+        }
+    }
+
 }
 
 bool BasicHT::has(string key) {

@@ -1,10 +1,12 @@
-    #include <iostream>
+#include <iostream>
 #include "friendhash.h"
 
 using namespace std;
 
 FriendHash::FriendHash(int capacity)
-: vals(capacity), keys(capacity) {}
+: vals(capacity), keys(capacity) {
+    n = 0;
+}
 
 FriendHash::FriendHash(const FriendHash &other)
 : vals(other.vals.size()), keys(other.keys.size())

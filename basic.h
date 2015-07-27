@@ -17,6 +17,7 @@ class BasicHT
         int size() const;
         void remove(string key);
         void list(string key);
+        void printUsers();
 
     private:
         void resize();
