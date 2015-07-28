@@ -21,20 +21,12 @@ int User::getSize() {
     return size;
 }
 
-void User::removeFriend(string friendName) {
+void User::removeFromFriendsList(string friendName) {
     for (int i = 0; i < size; i++) {
         if (friendList[i]->getName() == friendName) {
             friendList.erase(friendList.begin() + i);
             size--;
-        } 
-    }
-}
-
-void User::removeFromFriendsList(string friendName) {
-    for (int i = 0; i < size; i++) {
-        if (friendList[i]->getName() == friendName) {
-            friendList[i]->removeFriend(name);
-        } 
+        }
     }
 }
 
@@ -44,18 +36,14 @@ string User::getFriendsName(int i) {
 
 void User::printFriends() {
     cout << "Friends for: " << name << endl;
-    cout << "HERE" << endl;
-    exit(0);
+
+    if (size == 0) {
+        cout << name << " has no friends." << endl;
+    }
+
     for (int i = 0; i < friendList.size(); i++) {
         if (friendList[i] != NULL) {
             cout << friendList[i]->getName() << endl;
         }
     }
-    // cout << "HERE" << endl;
-    // exit(0);
-}
-
-void User::clearFriendlist() {
-    friendList.clear();
-    size = 0;
 }
