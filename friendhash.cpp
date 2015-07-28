@@ -133,16 +133,11 @@ const bool * FriendHash::get(string key) const
 int FriendHash::hash(string key) const
 {
     int x = 0;
-    for(int i = 0; i < key.size(); i++)
+    for (int i = 0; i < key.length(); i++)
     {
         x = x * 31 + key[i];
     }
-    x %= key.size();
-    if(x < 0)
-    {
-        x += key.size();
-    }
-    return x;
+    return x % vals.size();
 }
 
 bool FriendHash::has(string key) const {

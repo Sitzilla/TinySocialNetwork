@@ -108,12 +108,10 @@ void BasicHT::set(string key, User *&val)
     {
         i = (i + 1) % keys.size();
     }
-    if (keys[i] == NULL) {
-        n++;
-    }
-
+    
     keys[i] = new string(key);
     vals[i] = val;
+    n++;
 
     if (n / (double)keys.size() > 0.6)
     {
