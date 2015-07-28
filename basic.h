@@ -5,8 +5,7 @@
 #include "user.h"
 using namespace std;
 
-class BasicHT
-{
+class BasicHT {
 public:
     BasicHT(int capacity = 257);
     BasicHT(const BasicHT &other);

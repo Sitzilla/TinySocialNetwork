@@ -8,9 +8,8 @@
 using namespace std;
 
 int main() {
-    BasicHT userHashtable(5);
-    FriendHash friendshipHashtable(5);
-    GameLogic newGame(userHashtable, friendshipHashtable);
+
+    GameLogic newGame;
     newGame.startGameLoop();
 
     return 0;

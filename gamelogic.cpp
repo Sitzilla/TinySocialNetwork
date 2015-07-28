@@ -6,10 +6,8 @@
 #include "friendhash.h"
 using namespace std;
 
-GameLogic::GameLogic(BasicHT pUserHashtable, FriendHash pFriendshipHashtable) {
-    userHashtable = pUserHashtable;
-    friendshipHashtable = pFriendshipHashtable;
-}
+GameLogic::GameLogic()
+: userHashtable(5), friendshipHashtable(5) {}
 
 void GameLogic::startGameLoop() {
 
@@ -76,7 +74,7 @@ void GameLogic::startGameLoop() {
 
                 if (samePerson(userName1, userName2)) {
                     break;
-                } 
+                }
 
                 friendUsers(userName1, userName2);
             }
@@ -94,7 +92,7 @@ void GameLogic::startGameLoop() {
 
                 if (samePerson(userName1, userName2)) {
                     break;
-                } 
+                }
 
                 unfriendUsers(userName1, userName2);
             }
@@ -126,7 +124,7 @@ void GameLogic::startGameLoop() {
 
                 if (samePerson(userName1, userName2)) {
                     break;
-                } 
+                }
 
                 checkFriends(userName1, userName2);
             }
@@ -134,7 +132,8 @@ void GameLogic::startGameLoop() {
             else if (command == quitCommand) {
                 cout << "Exiting Sitzes Social System" << endl;
                 exit(0);
-            } else {
+            }
+            else {
                 cout << "Error... unrecognizable command" << endl;
                 printInstructions();
             }
@@ -147,7 +146,8 @@ void GameLogic::registerUser(string userName) {
         User * user = new User(userName);
         userHashtable.set(user->getName(), user);
         cout << "Registered " << userName << " as a new user." << endl;
-    } else {
+    }
+    else {
         cout << userName << " is already registered." << endl;
     }
 }
@@ -167,7 +167,8 @@ void GameLogic::unregisterUser(string userName) {
         userHashtable.remove(userName);
 
         cout << "Deactivated user: " << userName << endl;
-    } else {
+    }
+    else {
         cout << userName << " is not a registered user." << endl;
     }
 }
@@ -188,12 +189,14 @@ void GameLogic::friendUsers(string userName1, string userName2) {
             friendshipHashtable.set(name2, true);
 
             cout << userName1 << " and " << userName2 << " are now friends!" << endl;
-        } else {
+        }
+        else {
             cout << userName1 << " and " << userName2 << " are already friends... cannot 'double' friend." << endl;
             return;
         }
-    } else {
-        cout << userName1 << " and " << userName2 << " are not both registered users... cannot unfriend." << endl;        
+    }
+    else {
+        cout << userName1 << " and " << userName2 << " are not both registered users... cannot unfriend." << endl;
     }
 }
 
@@ -214,12 +217,14 @@ void GameLogic::unfriendUsers(string userName1, string userName2) {
             user2->removeFromFriendsList(userName1);
 
             cout << "Unfriended " << userName1 << " and " << userName2 << endl;
-        } else {
+        }
+        else {
             cout << userName1 << " and " << userName2 << " not friends... cannot unfriend." << endl;
             return;
         }
-    } else {
-        cout << userName1 << " and " << userName2 << " are not both registered users... cannot unfriend." << endl;        
+    }
+    else {
+        cout << userName1 << " and " << userName2 << " are not both registered users... cannot unfriend." << endl;
     }
 }
 
@@ -246,7 +251,8 @@ void GameLogic::checkFriends(string userName1, string userName2) {
 
     if (areFriends(userName1, userName2)) {
         cout << userName1 << " and " << userName2 << " are friends." << endl;
-    } else {
+    }
+    else {
         cout << userName1 << " and " << userName2 << " are not friends." << endl;
     }
 }

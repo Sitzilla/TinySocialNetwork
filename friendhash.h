@@ -4,8 +4,7 @@
 #include <vector>
 using namespace std;
 
-class FriendHash
-{
+class FriendHash {
 public:
     FriendHash(int capacity = 257);
     FriendHash(const FriendHash &other);

@@ -4,6 +4,8 @@
 
 using namespace std;
 
+using namespace std;
+
 BasicHT::BasicHT(int capacity)
 : vals(capacity), keys(capacity) {
     n = 0;
@@ -27,6 +29,7 @@ BasicHT::BasicHT(const BasicHT &other)
             keys[i] = new string(*other.keys[i]);
         }
     }
+    n = other.n;
 }
 
 BasicHT::~BasicHT()
@@ -70,11 +73,17 @@ void BasicHT::remove(string key)
         delete vals[i];
         keys[i] = NULL;
         vals[i] = NULL;
+        n--;
     }
 }
 
 void BasicHT::list(string key) {
     int i = hash(key);
+    while (keys[i] != NULL && *keys[i] != key)
+    {
+        i = (i + 1) % keys.size();
+    }
+
     vals[i]->printFriends();
 }
 
@@ -97,6 +106,9 @@ void BasicHT::resize()
         if (keysCopy[i] != NULL)
         {
             set(*keysCopy[i], valsCopy[i]);
+            n--;
+            keysCopy[i] = NULL;
+            valsCopy[i] = NULL;
         }
     }
 }
@@ -108,7 +120,7 @@ void BasicHT::set(string key, User *&val)
     {
         i = (i + 1) % keys.size();
     }
-    
+
     keys[i] = new string(key);
     vals[i] = val;
     n++;
@@ -132,21 +144,15 @@ User *BasicHT::get(string key)
 
 int BasicHT::hash(string key) const
 {
-    // int x = 0;
-    // for (int i = 0; i < key.length(); i++)
-    // {
-    //     x = x * 31 + key[i];
-    // }
-    // return x % vals.size();
     int x = 0;
-    for(int i = 0; i < key.size(); i++)
+    for (int i = 0; i < key.size(); i++)
     {
         x = x * 31 + key[i];
     }
-    x %= key.size();
-    if(x < 0)
+    x %= keys.size();
+    if (x < 0)
     {
-        x += key.size();
+        x += keys.size();
     }
     return x;
 }

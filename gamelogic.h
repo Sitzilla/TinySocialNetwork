@@ -11,7 +11,7 @@ using namespace std;
 class GameLogic {
 
 public:
-    GameLogic(BasicHT pUserHashtable, FriendHash pFriendshipHashtable);
+    GameLogic();
     void startGameLoop();
     void registerUser(string name);
     void unregisterUser(string userName);

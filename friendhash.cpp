@@ -26,6 +26,7 @@ FriendHash::FriendHash(const FriendHash &other)
             keys[i] = new string(*other.keys[i]);
         }
     }
+    n = other.n;
 }
 
 FriendHash::~FriendHash()
@@ -67,6 +68,7 @@ void FriendHash::remove(string key)
         }
         keys[i] = NULL;
         vals[i] = NULL;
+        n--;
     }
 }
 
@@ -90,6 +92,7 @@ void FriendHash::resize()
             set(*keysCopy[i], *valsCopy[i]);
             delete keysCopy[i];
             delete valsCopy[i];
+            n--;
         }
     }
 }
@@ -133,11 +136,16 @@ const bool * FriendHash::get(string key) const
 int FriendHash::hash(string key) const
 {
     int x = 0;
-    for (int i = 0; i < key.length(); i++)
+    for (int i = 0; i < key.size(); i++)
     {
         x = x * 31 + key[i];
     }
-    return x % vals.size();
+    x %= keys.size();
+    if (x < 0)
+    {
+        x += keys.size();
+    }
+    return x;
 }
 
 bool FriendHash::has(string key) const {
