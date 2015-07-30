@@ -6,6 +6,8 @@
 #include "friendhash.h"
 using namespace std;
 
+// Initialized Hashtables to original spaces of 5.  Hashtables double in size after
+// more than 60% of space has been taken up.
 GameLogic::GameLogic()
 : userHashtable(5), friendshipHashtable(5) {}
 
